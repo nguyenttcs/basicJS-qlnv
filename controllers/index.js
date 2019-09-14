@@ -30,7 +30,7 @@ document.getElementById('btnThemNV').addEventListener('click', function () {
     mangNhanVien.push(nhanVien);
 
     //Hien thi table dssv
-    createTable();
+    createTable(mangNhanVien);
 
     //Luu vao localStorage
     luuStorage();
@@ -45,11 +45,11 @@ function setValueById(id, val) {
     document.getElementById(id).value = val;
 }
 
-function createTable() {
+function createTable(mangNV) {
     var dsTheTr = '';
-    for (var i = 0; i < mangNhanVien.length; i++) {
+    for (var i = 0; i < mangNV.length; i++) {
 
-        var nv = mangNhanVien[i];
+        var nv = mangNV[i];
         dsTheTr += `
             <tr>
                 <td>${nv.maNV}</td>
@@ -81,7 +81,7 @@ function xoaNhanVien(maNV) {
         }
     }
 
-    createTable();
+    createTable(mangNhanVien);
 
     //Real
     // luuStorage();
@@ -106,7 +106,7 @@ function layStorage() {
         mangNhanVien = JSON.parse(sMangNhanVien);
 
         // Goi lai tao Bang
-        createTable();
+        createTable(mangNhanVien);
     }
 }
 
@@ -151,7 +151,7 @@ document.getElementById('btnCapNhat').addEventListener('click', function () {
     }
 
     //Hien thi table dssv
-    createTable();
+    createTable(mangNhanVien);
 
     //Luu vao localStorage
     // luuStorage();
@@ -191,8 +191,8 @@ function setShowButton(ds1, ds2){
 // Yeu Cau 5: Thuc hien chuc nang tim kiem nhan vien
 function timKiemNhanVien(tuKhoa){
     if(tuKhoa == ""){
-        layStorage();
-        createTable();
+        // layStorage();
+        createTable(mangNhanVien);
     }
     var mangNVTimKiem = [];
 
@@ -200,8 +200,6 @@ function timKiemNhanVien(tuKhoa){
     tuKhoa = tuKhoa.toLowerCase();
 
     //Lay thong tin nguoi dung nhap vao
-    // var tuKhoa = getValueById('searchName');
-
     //Tim nhan vien trong mang co ten trung voi ten nguoi dung nhap vao ko
     //Neu trung thi push vao mangVNTimKiem
 
@@ -211,15 +209,17 @@ function timKiemNhanVien(tuKhoa){
             mangNVTimKiem.push(mangNhanVien[i]);
         }
     }
-    if(mangNhanVien.length <= 0) return mangNhanVien;
+
+    // if(mangNhanVien.length <= 0) return mangNhanVien;
+    
     return mangNVTimKiem;
 }
 
 document.getElementById('btnTimNV').addEventListener('click', function(){
     var tuKhoa = getValueById('searchName');
 
-    mangNhanVien = timKiemNhanVien(tuKhoa);
+    mangTimKiemNhanVien = timKiemNhanVien(tuKhoa);
 
-    createTable();
+    createTable(mangTimKiemNhanVien);
      
 })
