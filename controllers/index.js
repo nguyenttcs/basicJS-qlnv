@@ -4,8 +4,17 @@ var mangNhanVien = [];
 // Load localStorage
 layStorage();
 
+// Reset form
+document.getElementById('btnThem').addEventListener('click', function () {
+    // Reset Form
+    resetForm();
+
+    //Hidden CapNhat button
+    setShowButton('none','block');
+})
 
 document.getElementById('btnThemNV').addEventListener('click', function () {
+
     //Lay thong tin nhan vien
     var maNV = getValueById('msnv');
     var hoTenNV = getValueById('name');
@@ -32,8 +41,8 @@ function getValueById(id) {
     return document.getElementById(id).value;
 }
 
-function setValueById(id) {
-    return document.getElementById(id).value;
+function setValueById(id, val) {
+    document.getElementById(id).value = val;
 }
 
 function createTable() {
@@ -49,7 +58,7 @@ function createTable() {
                 <td>${nv.ngaySinh}</td>
                 <td>${nv.chucVuNV}</td>
                 <td>
-                    <div class="d-flex">
+                    <div class="d-flex btn-group">
                         <button class="btn btn-warning btnSuaNV" onclick="suaNhanVien('${nv.maNV}')" data-toggle="modal" data-target="#myModal">Edit</button>
                         <button class="btn btn-danger btnXoaNV" onclick="xoaNhanVien('${nv.maNV}')">Delete</button>
                     </div>
@@ -103,17 +112,24 @@ function layStorage() {
 
 // Yeu cau 3: Xay dung tinh nang Edit nhan vien
 function suaNhanVien(maNV) {
+
+    //Visible CapNhat button
+    setShowButton('block','none');
+
     for (var i = 0; i < mangNhanVien.length; i++) {
         if (mangNhanVien[i].maNV === maNV) {
             // Load thong tin nhan vien tu mangNhanVien > hien thi tren UI
             document.getElementById('msnv').value = mangNhanVien[i].maNV;
             document.getElementById('name').value = mangNhanVien[i].hoTenNV;
-            document.getElementById('email').value= mangNhanVien[i].emailNV;
+            document.getElementById('email').value = mangNhanVien[i].emailNV;
             document.getElementById('password').value = mangNhanVien[i].mkNV;
             document.getElementById('datepicker').value = mangNhanVien[i].ngaySinh;
             document.getElementById('chucvu').value = mangNhanVien[i].chucVuNV;
         }
     }
+
+    //disable the input#msnv
+    document.getElementById('msnv').setAttribute('disabled', 'disabled');
 }
 
 document.getElementById('btnCapNhat').addEventListener('click', function () {
@@ -126,13 +142,11 @@ document.getElementById('btnCapNhat').addEventListener('click', function () {
     var ngaySinh = getValueById('datepicker');
     var chucVuNV = getValueById('chucvu');
 
+    var nvCapNhat = new NhanVien(maNV, hoTenNV, emailNV, mkNV, ngaySinh, chucVuNV);
+
     for (var i = 0; i < mangNhanVien.length; i++) {
-        if (mangNhanVien[i].maNV === maNV) {
-            mangNhanVien[i].hoTenNV = hoTenNV;
-            mangNhanVien[i].emailNV = emailNV;
-            mangNhanVien[i].mkNV = mkNV;
-            mangNhanVien[i].ngaySinh = ngaySinh;
-            mangNhanVien[i].chucVuNV = chucVuNV;
+        if (mangNhanVien[i].maNV === nvCapNhat.maNV) {
+            mangNhanVien[i] = nvCapNhat;
         }
     }
 
@@ -143,3 +157,69 @@ document.getElementById('btnCapNhat').addEventListener('click', function () {
     // luuStorage();
 
 });
+
+// Function Reset Form to defauft value
+function resetForm() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = mm + '/' + dd + '/' + yyyy;
+
+    setValueById('msnv', '');
+    setValueById('name', '');
+    setValueById('email', '');
+    setValueById('password', '');
+    setValueById('datepicker', today);
+    setValueById('chucvu', 'Chọn chức vụ');
+
+    document.getElementById('msnv').removeAttribute('disabled');
+
+}
+
+/** 
+ * @param {btn capnhat} ds1 
+ * @param {btn them} ds2 
+ */
+function setShowButton(ds1, ds2){
+    //Hidden CapNhat button
+    document.getElementById('btnCapNhat').style.display = ds1;
+    document.getElementById('btnThemNV').style.display = ds2;
+}
+
+// Yeu Cau 5: Thuc hien chuc nang tim kiem nhan vien
+function timKiemNhanVien(tuKhoa){
+    if(tuKhoa == ""){
+        layStorage();
+        createTable();
+    }
+    var mangNVTimKiem = [];
+
+    //Bien doi tuKhoa thanh chu thuong 
+    tuKhoa = tuKhoa.toLowerCase();
+
+    //Lay thong tin nguoi dung nhap vao
+    // var tuKhoa = getValueById('searchName');
+
+    //Tim nhan vien trong mang co ten trung voi ten nguoi dung nhap vao ko
+    //Neu trung thi push vao mangVNTimKiem
+
+    // Dung ham search() or indexOf
+    for(var i=0; i<mangNhanVien.length;i++){
+        if(mangNhanVien[i].hoTenNV.toLowerCase().trim().indexOf(tuKhoa) !== -1){
+            mangNVTimKiem.push(mangNhanVien[i]);
+        }
+    }
+    if(mangNhanVien.length <= 0) return mangNhanVien;
+    return mangNVTimKiem;
+}
+
+document.getElementById('btnTimNV').addEventListener('click', function(){
+    var tuKhoa = getValueById('searchName');
+
+    mangNhanVien = timKiemNhanVien(tuKhoa);
+
+    createTable();
+     
+})
